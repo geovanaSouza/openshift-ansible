@@ -2,18 +2,6 @@
 # vi: set ft=ruby :
 VAGRANTFILE_API_VERSION = "2"
 
-#$installdocker = <<SCRIPT
-#YUM_REPO_CONFIG_PATH="/etc/yum.repos.d/cbs.repo"
-#tee $YUM_REPO_CONFIG_PATH <<-"EOF"
-#[virt7-docker-common-testing]
-#name=virt7-docker-common-testing
-#baseurl=http://cbs.centos.org/repos/virt7-docker-common-testing/x86_64/os/
-#gpgcheck=0
-#enabled=0
-#EOF
-#yum install -y --enablerepo virt7-docker-common-testing docker-latest
-#SCRIPT
-
 unless Vagrant.has_plugin?("vagrant-hostmanager")
   raise 'vagrant-hostmanager plugin is required'
 end
@@ -59,7 +47,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       node.vm.hostname = "ose3-node#{node_index}.example.com"
       node.vm.network :private_network, ip: "192.168.100.#{200 + n}"
       config.vm.provision "shell", inline: "nmcli connection reload; systemctl restart NetworkManager.service"
-#      config.vm.provision "shell", inline: $installdocker
     end
   end
 
@@ -68,7 +55,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     master.vm.network :private_network, ip: "192.168.100.100"
     master.vm.network :forwarded_port, guest: 8443, host: 8443
     config.vm.provision "shell", inline: "nmcli connection reload; systemctl restart NetworkManager.service"
-#    config.vm.provision "shell", inline: $installdocker
     master.vm.provision "ansible" do |ansible|
       ansible.limit = 'all'
       ansible.sudo = true
@@ -83,4 +69,3 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 end
-
